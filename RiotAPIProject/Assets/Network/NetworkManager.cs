@@ -5,8 +5,8 @@ using System.Collections.Generic;
 
 public class NetworkManager : MonoBehaviour
 {
-	string ApiKey = "fb1ccb17-75bf-4fbf-85c9-a8b3b8e00501";
-	string Region = "na";
+	string ApiKey = "";
+	string Region = "";
 	string KeyEnd = "";
 	string BaseUrl = "";
 	string TeamBaseUrl = "";
@@ -19,13 +19,15 @@ public class NetworkManager : MonoBehaviour
 
 	void Start()
 	{
+		ApiKey = "fb1ccb17-75bf-4fbf-85c9-a8b3b8e00501";
+		Region = "na";		
 		KeyEnd = "?api_key=" + ApiKey;
 		BaseUrl = "http://prod.api.pvp.net/api/lol/" + Region + "/v1.1";
 		TeamBaseUrl = "http://prod.api.pvp.net/api/" + Region + "/v2.1";
 	}		
 
 	#region SUMMONER INFO
-	public SummonerDto GetSummonerByID(string id)
+	public SummonerDto GetSummonerByID(double id)
 	{
 		string url = BaseUrl + "/summoner/" + id + KeyEnd;
 		return new SummonerDto(SendRequest(url));
@@ -48,25 +50,25 @@ public class NetworkManager : MonoBehaviour
 		return new SummonerDto(SendRequest(url));
 	}
 
-	public JSONObject GetRunePagesByID(double id)
+	public RunePagesDto GetRunePagesByID(double id)
 	{
 		string url = BaseUrl + "/summoner/" + id + "/runes" + KeyEnd;
-		return SendRequest(url);
+		return new RunePagesDto(SendRequest(url));
 	}
 	
-	public JSONObject GetRunePagesBySummonerName(string summonerName)
+	public RunePagesDto GetRunePagesBySummonerName(string summonerName)
 	{
 		SummonerDto summonerDto = GetSummonerByName(summonerName);
 		return GetRunePagesByID(summonerDto.id);
 	}
 	
-	public JSONObject GetMasteriesByID(double id)
+	public MasteryPagesDto GetMasteriesByID(double id)
 	{
 		string url = BaseUrl + "/summoner/" + id + "/masteries" + KeyEnd;
-		return SendRequest(url);
+		return new MasteryPagesDto(SendRequest(url));
 	}
 
-	public JSONObject GetMasteriesBySummonerName(string summonerName)
+	public MasteryPagesDto GetMasteriesBySummonerName(string summonerName)
 	{
 		SummonerDto summonerDto = GetSummonerByName(summonerName);
 		return GetMasteriesByID(summonerDto.id);
@@ -74,22 +76,21 @@ public class NetworkManager : MonoBehaviour
 	#endregion
 
 	#region TEAMS
-	public JSONObject GetTeamsForID(double id)
+	public TeamDto GetTeamsForID(double id)
 	{
 		string url = TeamBaseUrl + "/team/by-summoner/" + id + KeyEnd;
-		return SendRequest(url);
+		return new TeamDto(SendRequest(url));
 	}
 
-	public JSONObject GetTeamsForSummonerName(string summonerName)
+	public TeamDto GetTeamsForSummonerName(string summonerName)
 	{
 		SummonerDto summonerDto = GetSummonerByName(summonerName);
 		return GetTeamsForID(summonerDto.id);
 	}
 	#endregion
 
-
 	#region STATS
-	public JSONObject GetNormalStatsByID(double id, Season season)
+	public PlayerStatsSummaryListDto GetNormalStatsByID(double id, Season season)
 	{
 		string url = BaseUrl + "/stats/by-summoner/" + id + "/summary";
 		if (season == Season.Season3)
@@ -104,16 +105,16 @@ public class NetworkManager : MonoBehaviour
 		{
 			url += KeyEnd;
 		}
-		return SendRequest(url);
+		return new PlayerStatsSummaryListDto(SendRequest(url));
 	}
 			
-	public JSONObject GetNormalStatsBySummonerName(string summonerName, Season season)
+	public PlayerStatsSummaryListDto GetNormalStatsBySummonerName(string summonerName, Season season)
 	{
 		SummonerDto summonerDto = GetSummonerByName(summonerName);
 		return GetNormalStatsByID(summonerDto.id, season);
 	}
 			
-	public JSONObject GetRankedStatsByID(double id, Season season)
+	public RankedStatsDto GetRankedStatsByID(double id, Season season)
 	{
 		string url = BaseUrl + "/stats/by-summoner/" + id + "/ranked";
 		if (season == Season.Season3)
@@ -128,10 +129,10 @@ public class NetworkManager : MonoBehaviour
 		{
 			url += KeyEnd;
 		}
-		return SendRequest(url);
+		return new RankedStatsDto(SendRequest(url));
 	}
 					
-	public JSONObject GetRankedStatsBySummonerName(string summonerName, Season season)
+	public RankedStatsDto GetRankedStatsBySummonerName(string summonerName, Season season)
 	{
 		SummonerDto summonerDto = GetSummonerByName(summonerName);
 		return GetRankedStatsByID(summonerDto.id, season);
@@ -140,13 +141,13 @@ public class NetworkManager : MonoBehaviour
 	#endregion
 
 	#region LEAGUES
-	public JSONObject GetLeagueDataByID(double id)
+	public LeagueDto GetLeagueDataByID(double id)
 	{
 		string url = TeamBaseUrl + "/league/by-summoner/" + id + KeyEnd;
-		return SendRequest(url);
+		return new LeagueDto(SendRequest(url));
 	}
 
-	public JSONObject GetLEagueDataBySummonerName(string summonerName)
+	public LeagueDto GetLeagueDataBySummonerName(string summonerName)
 	{
 		SummonerDto summonerDto = GetSummonerByName(summonerName);
 		return GetLeagueDataByID(summonerDto.id);
@@ -154,13 +155,13 @@ public class NetworkManager : MonoBehaviour
 	#endregion		
 
 	#region GAMES
-	public JSONObject GetRecentGamesByID(double id)
+	public RecentGamesDto GetRecentGamesByID(double id)
 	{
 		string url = BaseUrl + "/game/by-summoner/" + id + "/recent" + KeyEnd;
-		return SendRequest(url);
+		return new RecentGamesDto(SendRequest(url));
 	}
 
-	public JSONObject GetRecentGamesBySummonerName(string summonerName)
+	public RecentGamesDto GetRecentGamesBySummonerName(string summonerName)
 	{
 		SummonerDto summonerDto = GetSummonerByName(summonerName);
 		return GetRecentGamesByID(summonerDto.id);
@@ -168,16 +169,16 @@ public class NetworkManager : MonoBehaviour
 	#endregion
 
 	#region CHAMPIONS
-	public JSONObject GetAllChampions()
+	public ChampionListDto GetAllChampions()
 	{
 		string url = BaseUrl + "/champion" + KeyEnd;
-		return SendRequest(url);
+		return new ChampionListDto(SendRequest(url));
 	}
 	
-	public JSONObject GetFreeChampions()
+	public ChampionListDto GetFreeChampions()
 	{
 		string url = BaseUrl + "/champion?freeToPlay=true&" + KeyEnd.Substring(1);
-		return SendRequest(url);
+		return new ChampionListDto(SendRequest(url));
 	}
 	#endregion
 
@@ -191,11 +192,13 @@ public class NetworkManager : MonoBehaviour
 		}
 		if (request.error == null)
 		{
+			Debug.Log(request.text);
 			return JSONObject.Parse(request.text);
 		}
 		else 
 		{
 			Debug.LogError(request.error);
+			//429 is too may requests. Beta dev API is limited to 5 calls per 10 seconds.
 			return null;
 		}
 	}

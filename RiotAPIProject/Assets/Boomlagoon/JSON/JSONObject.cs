@@ -363,6 +363,14 @@ namespace Boomlagoon.JSON {
 			if (string.IsNullOrEmpty(jsonString)) {
 				return null;
 			}
+			if (jsonString.StartsWith("["))
+		    {
+				jsonString = jsonString.Substring(1);
+			}
+			if(jsonString.EndsWith("]"))
+			{
+				jsonString = jsonString.Substring(0, jsonString.Length-1);
+			}
 
 			JSONValue currentValue = null;
 
